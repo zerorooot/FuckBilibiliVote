@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="bili">
+        <item>customize</item>
+        <item>6.73.1</item>
+        <item>6.15.1</item>
+    </string-array>
+    <string-array name="bilihd">
+        <item>customize</item>
+        <item>1.19.0</item>
+    </string-array>
+    <string-array name="xposed_scope">
+        <item>tv.danmaku.bili</item>
+        <item>tv.danmaku.bilibilihd</item>
+    </string-array>
+</resources>
