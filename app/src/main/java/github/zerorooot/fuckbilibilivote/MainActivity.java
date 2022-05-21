@@ -1,6 +1,8 @@
 package github.zerorooot.fuckbilibilivote;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        hideLauncherIcon();
+
         MySharedPreferences biliSp;
         try {
             biliSp = new MySharedPreferences(getBaseContext());
@@ -40,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
             biliSp.save("bili_hd_class_method", Objects.requireNonNull(binding.biliHdClassMethod.getText()).toString());
             Toast.makeText(getApplicationContext(), "save success", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    public void hideLauncherIcon() {
+        PackageManager packageManager = this.getPackageManager();
+        ComponentName componentName = new ComponentName(MainActivity.this, "github.zerorooot.fuckbilibilivote.MainActivityAlias");
+        packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
     }
 
 
