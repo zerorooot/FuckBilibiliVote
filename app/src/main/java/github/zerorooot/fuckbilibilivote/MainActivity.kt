@@ -1,6 +1,5 @@
 package github.zerorooot.fuckbilibilivote
 
-import android.R
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
@@ -121,16 +120,15 @@ class MainActivity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).post {
                     Toast.makeText(
                         application,
-                        "download success,please restart this app",
+                        "update success,please restart this app",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
 
             } catch (e: Exception) {
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(application, "download error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(application, "download error \n${e.message.toString()}", Toast.LENGTH_LONG).show()
                 }
-                e.printStackTrace()
             }
         }.start()
     }
@@ -141,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "save success", Toast.LENGTH_SHORT).show()
         }
         binding.saveButton.setOnLongClickListener {
-            Toast.makeText(application, "start download", Toast.LENGTH_SHORT).show()
+            Toast.makeText(application, "start update config", Toast.LENGTH_SHORT).show()
             httpConnect()
             true
         }
@@ -164,10 +162,10 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = ArrayAdapter(
             this,
-            R.layout.simple_spinner_item,
+            android.R.layout.simple_spinner_item,
             array
         )
-        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
