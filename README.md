@@ -13,6 +13,10 @@ If you think this app is very helpful to you, please give me a free start, thank
 
 <img src="Screenshot/demo.jpg" width="50%">
 
+# How to update config
+
+Long click the save button
+
 # How to customize
 
 ## Find class name and method name
