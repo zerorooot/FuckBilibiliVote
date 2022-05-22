@@ -46,6 +46,8 @@ private final void m0(ViewProgressReply viewProgressReply, long j2, long j3) {}
 
 ![guide](Screenshot/guide.png)
 
+Note: The parameter type of the method must be **ViewProgressReply, long, long**
+
 Record the class name and method name
 
 class name  :`tv.danmaku.chronos.wrapper.chronosrpc.remote.RemoteServiceHandler`
@@ -59,4 +61,5 @@ Enter the **class name** and **method name** into this app and **save**
 <img src="Screenshot/demo.jpg" width="50%">
 
 **restart** bilibili
+
 enjoy

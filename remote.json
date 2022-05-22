@@ -1,0 +1,17 @@
+ 
+{
+  "hdJson": [
+    {
+      "methodName": "d0",
+      "className": "tv.danmaku.chronos.wrapper.rpc.remote.RemoteServiceHandler",
+      "version": "1.18.0"
+    }
+  ],
+  "biliJson": [
+    {
+      "methodName": "J6",
+      "className": "tv.danmaku.chronos.wrapper.ChronosService",
+      "version": "6.15.1"
+    }
+  ]
+}
