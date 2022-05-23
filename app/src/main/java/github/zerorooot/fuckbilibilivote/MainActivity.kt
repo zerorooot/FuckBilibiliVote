@@ -42,24 +42,10 @@ class MainActivity : AppCompatActivity() {
             ).show()
             binding.saveButton.isEnabled = false
             binding.hideSwitch.isEnabled = false
+            binding.autoHookSwitch.isEnabled = false
             return
         }
 
-
-        val json = getJson()
-
-        setSpinner(
-            binding.biliVersionSpinner,
-            json.getJSONArray("biliJson"),
-            binding.biliClassName,
-            binding.biliClassMethod
-        )
-        setSpinner(
-            binding.hdVersionSpinner,
-            json.getJSONArray("hdJson"),
-            binding.biliHdClassName,
-            binding.biliHdClassMethod
-        )
 
 
         setTextViewText()
@@ -79,115 +65,34 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
-    }
 
-
-    private fun getJson(): JSONObject {
-        val file = this.applicationContext.resources.assets.open("init.json").bufferedReader()
-            .use { it.readText() }
-        val json = JSONObject(file)
-        val string = biliSp.getString("json", "")
-        if ("" != string) {
-            val remoteJson = JSONObject(string!!)
-
-            val biliJsonArray = remoteJson.getJSONArray("biliJson")
-            for (i in 0 until biliJsonArray.length()) {
-                json.getJSONArray("biliJson").put(biliJsonArray.getJSONObject(i))
-            }
-            val hdJSONArray = remoteJson.getJSONArray("hdJson")
-            for (i in 0 until hdJSONArray.length()) {
-                json.getJSONArray("hdJson").put(hdJSONArray.getJSONObject(i))
-            }
+        biliSp.getBoolean("auto_hook", true).let {
+            binding.autoHookSwitch.isChecked = it
+            setVisibility(it)
         }
-
-        return json
+        binding.autoHookSwitch.setOnCheckedChangeListener { _, isChanged ->
+            val edit = biliSp.edit()
+            edit.putBoolean("auto_hook", isChanged)
+            edit.apply()
+            setVisibility(isChanged)
+        }
+    }
+    private fun setVisibility(isVisibility: Boolean) {
+        val visibility = if (isVisibility) View.GONE else View.VISIBLE
+        binding.biliClassName.visibility = visibility
+        binding.biliClassMethod.visibility = visibility
+        binding.saveButton.visibility = visibility
+        binding.textInputLayout.visibility = visibility
+        binding.textInputLayout2.visibility = visibility
     }
 
-    private fun httpConnect() {
-        Thread {
-            try {
-                val url =
-                    URL("https://raw.githubusercontent.com/zerorooot/FuckBilibiliVote/main/remote.json")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connectTimeout = 5000
-                connection.readTimeout = 5000
-                val inputStream = BufferedInputStream(connection.inputStream)
-                val string = inputStream.bufferedReader().use { it.readText() }
-                val editor = biliSp.edit()
-                editor.putString("json", string)
-                editor.apply()
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(
-                        application,
-                        "update success,please restart this app",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-            } catch (e: Exception) {
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(application, "download error \n${e.message.toString()}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }.start()
-    }
 
     private fun setButton() {
         binding.saveButton.setOnClickListener {
             save()
             Toast.makeText(applicationContext, "save success", Toast.LENGTH_SHORT).show()
         }
-        binding.saveButton.setOnLongClickListener {
-            Toast.makeText(application, "start update config", Toast.LENGTH_SHORT).show()
-            httpConnect()
-            true
-        }
     }
-
-    private fun setSpinner(
-        spinner: Spinner,
-        jsonArray: JSONArray,
-        className: TextInputEditText,
-        classMethodName: TextInputEditText
-    ) {
-
-        val array = arrayListOf<String>()
-        array.add("customize")
-
-        for (i in 0 until jsonArray.length()) {
-            val json = jsonArray.getJSONObject(i)
-            array.add(json.getString("version"))
-        }
-
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            array
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                try {
-                    val json = jsonArray.getJSONObject(position - 1)
-                    className.setText(json.getString("className"))
-                    classMethodName.setText(json.getString("methodName"))
-                } catch (e: Exception) {
-                }
-            }
-        }
-    }
-
 
     private fun save() {
         val edit = biliSp.edit()
@@ -198,14 +103,6 @@ class MainActivity : AppCompatActivity() {
         edit.putString(
             "bili_class_method",
             Objects.requireNonNull(binding.biliClassMethod.text).toString()
-        )
-        edit.putString(
-            "bili_hd_class_name",
-            Objects.requireNonNull(binding.biliHdClassName.text).toString()
-        )
-        edit.putString(
-            "bili_hd_class_method",
-            Objects.requireNonNull(binding.biliHdClassMethod.text).toString()
         )
         edit.apply()
     }
@@ -226,7 +123,5 @@ class MainActivity : AppCompatActivity() {
     private fun setTextViewText() {
         binding.biliClassName.setText(biliSp.getString("bili_class_name", ""))
         binding.biliClassMethod.setText(biliSp.getString("bili_class_method", ""))
-        binding.biliHdClassName.setText(biliSp.getString("bili_hd_class_name", ""))
-        binding.biliHdClassMethod.setText(biliSp.getString("bili_hd_class_method", ""))
     }
 }

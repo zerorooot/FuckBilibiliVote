@@ -3,31 +3,39 @@ package github.zerorooot.fuckbilibilivote
 import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
-class Xposed : IXposedHookLoadPackage {
-    private val bili = "tv.danmaku.bili"
-    private val biliHd = "tv.danmaku.bilibilihd"
 
+class Xposed : IXposedHookLoadPackage {
     @Throws(Throwable::class)
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        if (bili == lpparam.packageName) {
-            getConfigAndHook("bili_class_name", "bili_class_method", lpparam)
+        if (!lpparam.packageName.contains("bili")) {
+            return
         }
-        if (biliHd == lpparam.packageName) {
-            getConfigAndHook("bili_hd_class_name", "bili_hd_class_method", lpparam)
+        XposedBridge.log("hook ${lpparam.packageName}")
+        val xsp = XSharedPreferences(BuildConfig.APPLICATION_ID, "bili")
+        val isAutoHook = xsp.getBoolean("auto_hook", true)
+        if (isAutoHook) {
+            autoHook(lpparam)
+            return
         }
+        val className = xsp.getString("bili_class_name", "")
+        val methodName = xsp.getString("bili_class_method", "")
+        biliHook(className, methodName, lpparam)
     }
 
-    @Throws(NoSuchMethodException::class)
-    private fun getConfigAndHook(
-        classNameSp: String,
-        methodNameSp: String,
-        lpparam: LoadPackageParam
-    ) {
-        val xsp = XSharedPreferences(BuildConfig.APPLICATION_ID, "bili")
-        val className = xsp.getString(classNameSp, "")
-        val methodName = xsp.getString(methodNameSp, "")
-        XposedBridge.log("get bili class name:$className method name:$methodName")
-        biliHook(className, methodName, lpparam)
+
+    private fun autoHook(lpparam: LoadPackageParam) {
+        val viewProgressReplyClass = XposedHelpers.findClass(
+            "com.bapis.bilibili.app.view.v1.ViewProgressReply",
+            lpparam.classLoader
+        )
+        val method = viewProgressReplyClass.getDeclaredMethod("getVideoGuide")
+        method.isAccessible = true
+        XposedBridge.hookMethod(method, object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                XposedBridge.log("auto hook bili vote success")
+                param.result = null
+            }
+        })
     }
 
     @Throws(NoSuchMethodException::class)
@@ -45,7 +53,7 @@ class Xposed : IXposedHookLoadPackage {
         method.isAccessible = true
         XposedBridge.hookMethod(method, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-                XposedBridge.log("fuck bili vote " + lpparam.packageName + "  " + param.args[0].toString())
+                XposedBridge.log("hook bili vote success")
                 param.args[0] = null
             }
         })

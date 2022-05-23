@@ -3,9 +3,6 @@ remove vote(投票) attention(一键三连) link(预告) of Bilibili
 
 download: https://github.com/zerorooot/FuckBilibiliVote/releases
 
-Note:
-
-Only tested on `tv.danmaku.bili` **6.15.1** 、**6.73.1** and `tv.danmaku.bilibilihd` **1.19.0**
 
 Test video link https://www.bilibili.com/video/BV1XY4y1Y7Jm
 
@@ -13,9 +10,6 @@ If you think this app is very helpful to you, please give me a free start, thank
 
 <img src="Screenshot/demo.jpg" width="50%">
 
-# How to update config
-
-Long click the save button
 
 # How to customize
 
@@ -62,7 +56,7 @@ method name : `m0`
 
 Enter the **class name** and **method name** into this app and **save**
 
-<img src="Screenshot/demo.jpg" width="50%">
+<img src="Screenshot/guide1.jpg" width="50%">
 
 **restart** bilibili
 
