@@ -114,7 +114,12 @@ class Xposed : IXposedHookLoadPackage {
     private fun getContentAndProgress(text: String): JSONObject {
         val content = protobufToString(getPara(text, "content", ""))
         val startTime = getPara(text, "progress", 0).toInt()
-        val entTime = startTime + getExtra(text).getInt("duration")
+        val duration = try {
+            getExtra(text).getInt("duration")
+        } catch (e: Exception) {
+            0
+        }
+        val entTime = startTime + duration
         return JSONObject().put("content", content)
             .put("time", "${getTime(startTime)} ~ ${getTime(entTime)}")
     }
