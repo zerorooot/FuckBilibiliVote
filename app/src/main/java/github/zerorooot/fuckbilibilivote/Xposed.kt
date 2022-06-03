@@ -54,7 +54,7 @@ class Xposed : IXposedHookLoadPackage {
             if (s.contains("ATTENTION")) {
                 print.put(
                     "attention",
-                    getContentAndProgress(s)
+                    getProgress(s)
                 )
             }
             if (s.contains("LINK")) {
@@ -64,16 +64,13 @@ class Xposed : IXposedHookLoadPackage {
                 print.put("vote", getVoteJsonArray(s))
             }
             if (s.contains("UP")) {
-                print.put(
-                    "up",
-                    getContentAndProgress(s)
-                )
+                print.put("up", getUpJsonArray(s, print))
             }
             if (s.contains("GRADE")) {
                 val msg = protobufToString(getExtra(s).getString("msg"))
                 print.put(
                     "grade",
-                    getContentAndProgress(s).put("msg", msg)
+                    getProgress(s).put("msg", msg)
                 )
             }
         }
@@ -81,6 +78,22 @@ class Xposed : IXposedHookLoadPackage {
             XposedBridge.log(print.toString())
             printInfo = print.toString()
         }
+    }
+
+    private fun getUpJsonArray(text: String, print: JSONObject): JSONArray {
+        val content = protobufToString(getPara(text, "content", ""))
+        var jsonArray = JSONArray()
+        if (print.has("up")) {
+            jsonArray = print.getJSONArray("up")
+        }
+        jsonArray.put(
+            JSONObject().put(
+                "content",
+                content
+            ).put("time", getTime(getPara(text, "progress", 0).toInt()))
+        )
+
+        return jsonArray
     }
 
     private fun getVoteJsonArray(s: String): JSONArray {
@@ -93,7 +106,7 @@ class Xposed : IXposedHookLoadPackage {
         )
         val jsonArray = JSONArray()
         return jsonArray.put(
-            getContentAndProgress(s).put("question", question)
+            getProgress(s).put("question", question)
                 .put("option1", option1).put("option2", option2)
         )
 
@@ -105,14 +118,13 @@ class Xposed : IXposedHookLoadPackage {
         val bvid = getExtra(s).getString("bvid")
         val jsonArray = JSONArray()
         return jsonArray.put(
-            getContentAndProgress(s).put("title", title)
+            getProgress(s).put("title", title)
                 .put("aid", aid)
                 .put("bvid", bvid)
         )
     }
 
-    private fun getContentAndProgress(text: String): JSONObject {
-        val content = protobufToString(getPara(text, "content", ""))
+    private fun getProgress(text: String): JSONObject {
         val startTime = getPara(text, "progress", 0).toInt()
         val duration = try {
             getExtra(text).getInt("duration")
@@ -120,8 +132,7 @@ class Xposed : IXposedHookLoadPackage {
             0
         }
         val entTime = startTime + duration
-        return JSONObject().put("content", content)
-            .put("time", "${getTime(startTime)} ~ ${getTime(entTime)}")
+        return JSONObject().put("time", "${getTime(startTime)} ~ ${getTime(entTime)}")
     }
 
     private fun getTime(progress: Int): String {
