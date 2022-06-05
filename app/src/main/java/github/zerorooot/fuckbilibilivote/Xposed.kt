@@ -5,6 +5,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
@@ -81,10 +82,11 @@ class Xposed : IXposedHookLoadPackage {
     }
 
     private fun getUpJsonArray(text: String, print: JSONObject): JSONArray {
-        val content = protobufToString(getPara(text, "content", ""))
-        var jsonArray = JSONArray()
-        if (print.has("up")) {
-            jsonArray = print.getJSONArray("up")
+        val content = protobufToString(getPara(text, "content", "").replace("\"", ""))
+        val jsonArray = if (print.has("up")) {
+            print.getJSONArray("up")
+        } else {
+            JSONArray()
         }
         jsonArray.put(
             JSONObject().put(
@@ -114,11 +116,14 @@ class Xposed : IXposedHookLoadPackage {
 
     private fun getLinkJsonArray(s: String): JSONArray {
         val title = protobufToString(getExtra(s).getString("title"))
+        val content = protobufToString(getPara(s, "content", "").replace("\"", ""))
         val aid = getExtra(s).getString("aid")
         val bvid = getExtra(s).getString("bvid")
         val jsonArray = JSONArray()
         return jsonArray.put(
-            getProgress(s).put("title", title)
+            getProgress(s)
+                .put("content", content)
+                .put("title", title)
                 .put("aid", aid)
                 .put("bvid", bvid)
         )
@@ -126,13 +131,18 @@ class Xposed : IXposedHookLoadPackage {
 
     private fun getProgress(text: String): JSONObject {
         val startTime = getPara(text, "progress", 0).toInt()
-        val duration = try {
-            getExtra(text).getInt("duration")
+        val entTime = try {
+            val duration = getExtra(text).getInt("duration")
+            startTime + duration
         } catch (e: Exception) {
             0
         }
-        val entTime = startTime + duration
-        return JSONObject().put("time", "${getTime(startTime)} ~ ${getTime(entTime)}")
+        val time=if(entTime!=0){
+            "${getTime(startTime)} ~ ${getTime(entTime)}"
+        }else{
+            getTime(startTime)
+        }
+        return JSONObject().put("time", time)
     }
 
     private fun getTime(progress: Int): String {
@@ -163,13 +173,29 @@ class Xposed : IXposedHookLoadPackage {
 }
 
 private fun protobufToString(text: String): String {
-    val split: List<String> =
-        Pattern.compile("[^0-9|\\\\]").matcher(text).replaceAll("").trim()
-            .split("\\")
+    val split: List<String> = text.trim().split("\\")
     val s16 = StringBuilder()
     for (s in split) {
         if (s != "") {
-            s16.append("%").append(Integer.toHexString(Integer.valueOf(s, 8)))
+            val number = Pattern.compile("\\D").matcher(s).replaceAll("").trim()
+            val numberURLEncoder = "%${Integer.toHexString(Integer.valueOf(number, 8))}"
+
+            if (number == s) {
+                s16.append(numberURLEncoder)
+                continue
+            }
+
+            // \\242MIAN\\244| \\275~
+            val char = s.replace(number, "")
+            val charURLEncoder = URLEncoder.encode(char, StandardCharsets.UTF_8.name())
+
+            val append = if (s.startsWith(char)) {
+                charURLEncoder + numberURLEncoder
+            } else {
+                numberURLEncoder + charURLEncoder
+            }
+
+            s16.append(append)
         }
     }
     return URLDecoder.decode(s16.toString(), StandardCharsets.UTF_8.name())
