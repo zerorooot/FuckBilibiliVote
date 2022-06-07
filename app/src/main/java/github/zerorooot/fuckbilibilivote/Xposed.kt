@@ -8,7 +8,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 
 class Xposed : IXposedHookLoadPackage {
-
+    private val myLog by lazy { MyLog() }
+    private var printInfo = ""
 
     @Throws(Throwable::class)
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
@@ -28,7 +29,12 @@ class Xposed : IXposedHookLoadPackage {
                 if (string.contains("command_dms")) {
                     param.result = null
                     try {
-                        MyLog().printLog(string)
+                        val log = myLog.getLog(string)
+                        if (printInfo != log) {
+                            XposedBridge.log(log)
+                            printInfo = log
+                        }
+
                     } catch (e: Exception) {
                         XposedBridge.log(e)
                         XposedBridge.log(string)

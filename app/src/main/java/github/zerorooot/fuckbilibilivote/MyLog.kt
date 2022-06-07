@@ -1,6 +1,5 @@
 package github.zerorooot.fuckbilibilivote
 
-import de.robv.android.xposed.XposedBridge
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLDecoder
@@ -9,9 +8,7 @@ import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
 class MyLog {
-    private var printInfo = ""
-
-    fun printLog(paramString: String) {
+    fun getLog(paramString: String): String {
         val list = ArrayList<String>()
         val print = JSONObject()
         paramString.replace(" ", "").split("command_dms").forEach { s ->
@@ -43,10 +40,8 @@ class MyLog {
                 )
             }
         }
-        if (printInfo != print.toString()) {
-            XposedBridge.log(print.toString())
-            printInfo = print.toString()
-        }
+
+        return print.toString()
     }
 
     private fun getUpJsonArray(text: String, print: JSONObject): JSONArray {
@@ -66,7 +61,7 @@ class MyLog {
         return jsonArray
     }
 
-    fun getVoteJsonArray(s: String): JSONArray {
+    private fun getVoteJsonArray(s: String): JSONArray {
         val question = protobufToString(getExtra(s).getString("question"))
         val option1 = protobufToString(
             getExtra(s).getJSONArray("options").getJSONObject(0).getString("desc")
@@ -153,8 +148,12 @@ class MyLog {
                 }
 
                 val numberURLEncoder = "%${Integer.toHexString(Integer.valueOf(number, 8))}"
+                //数字
+                if (numberURLEncoder == "%$number") {
+                    s16.append(number.replace("%", ""))
+                    continue
+                }
                 //全部中文
-                //
                 if (number == s) {
                     s16.append(numberURLEncoder)
                     continue
