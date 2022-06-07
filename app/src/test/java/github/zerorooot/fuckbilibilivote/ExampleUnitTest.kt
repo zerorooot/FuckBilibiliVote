@@ -18,26 +18,31 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
         val a =
-            "\\346\\250\\252\\347\\211\\210\\346\\234\\211\\346\\203\\212\\345\\226\\234\\345\\223\\246\\357\\275\\236"
-//        val b="\\242MIAN\\244| \\275~"
-        println(protobufToString(a))
+            "{\\\"vote_id\\\":2811365,\\\"question\\\":\\\"\\346\\210\\221\\346\\234\\211\\346\\262\\241\\346\\234\\211\\350\\256\\251\\346\\221\\251\\346\\211\\230\\350\\275\\246\\351\\273\\257\\347\\204\\266\\345\\244\\261\\350\\211\\262\\\",\\\"cnt\\\":3,\\\"options\\\":[{\\\"idx\\\":1,\\\"desc\\\":\\\"\\345\\275\\223\\347\\204\\266\\357\\274\\214\\344\\275\\240\\350\\277\\267\\344\\272\\272\\357\\274\\201\\\",\\\"cnt\\\":2},{\\\"idx\\\":2,\\\"desc\\\":\\\"heitui\\\",\\\"cnt\\\":1}],\\\"icon\\\":\\\"http://i0.hdslb.com/bfs/album/5ec559dbd4d54f8c1e76021d52eb9807de94bfb9.png\\\",\\\"my_vote\\\":0,\\\"pub_dynamic\\\":false,\\\"posX\\\":150,\\\"posY\\\":200,\\\"duration\\\":7000,\\\"shrink_icon\\\":\\\"http://i0.hdslb.com/bfs/b/2eec72efb74244eed5c2f28ce5628de4e9f9c9e8.png\\\",\\\"shrink_title\\\":\\\"\\346\\212\\225\\347\\245\\250\\\",\\\"show_status\\\":0}"
+                .replace("\\\"", "\"").replace("\\", "\\\\")
 
+        val jsonArray = JSONObject(a).getJSONArray("options")
+        val s2 = jsonArray.getJSONObject(1).getString("desc")
+
+        println(MyLog().protobufToString(s2))
     }
+
     @Test
     fun tt() {
-        val s="command_dms {\n" +
-                "  command: \"#LINK#\"\n" +
-                "  content: \"\\346\\250\\252\\347\\211\\210\\346\\234\\211\\346\\203\\212\\345\\226\\234\\345\\223\\246\\357\\275\\236\"\n" +
-                "  ctime: \"2022-06-05 17:49:08\"\n" +
-                "  extra: \"{\\\"aid\\\":299515211,\\\"title\\\":\\\"\\343\\200\\220\\351\\235\\242MIAN\\343\\200\\221\\346\\201\\213\\347\\210\\261\\345\\221\\212\\346\\200\\245\\342\\235\\244| \\346\\214\\207\\347\\274\\235\\344\\270\\255\\351\\235\\222\\346\\266\\251\\350\\220\\214\\350\\212\\275~\\344\\270\\200\\347\\234\\274\\345\\210\\260\\350\\200\\201\\\",\\\"icon\\\":\\\"http://i0.hdslb.com/bfs/archive/03ef3f34944e0f78b1b4050fc3f9705d1fa905e3.png\\\",\\\"bvid\\\":\\\"BV1YF41157xd\\\",\\\"arc_pic\\\":\\\"http://i2.hdslb.com/bfs/archive/e5577bca67c9e1599d0a4f62777a7ffb83ed1919.jpg\\\",\\\"arc_duration\\\":90,\\\"shrink_icon\\\":\\\"http://i0.hdslb.com/bfs/b/44338bca6bb98a34da40698beb4ee7d19aea92a6.png\\\",\\\"shrink_title\\\":\\\"\\350\\247\\206\\351\\242\\221\\\",\\\"show_status\\\":0,\\\"duration\\\":5000,\\\"arc_type\\\":0}\"\n" +
-                "  id: 1068132771135750912\n" +
-                "  id_str: \"1068132771135750912\"\n" +
-                "  mid: 1633788818\n" +
-                "  mtime: \"2022-06-05 17:49:08\"\n" +
-                "  oid: 738123298\n" +
-                "  progress: 1259\n" +
+        val s = "command_dms {\n" +
+                "  command: \"#VOTE#\"\n" +
+                "  content: \"\\346\\212\\225\\347\\245\\250\\345\\274\\271\\345\\271\\225\"\n" +
+                "  ctime: \"2022-06-06 17:51:38\"\n" +
+                "  extra: \"{\\\"vote_id\\\":2811365,\\\"question\\\":\\\"\\346\\210\\221\\346\\234\\211\\346\\262\\241\\346\\234\\211\\350\\256\\251\\346\\221\\251\\346\\211\\230\\350\\275\\246\\351\\273\\257\\347\\204\\266\\345\\244\\261\\350\\211\\262\\\",\\\"cnt\\\":3,\\\"options\\\":[{\\\"idx\\\":1,\\\"desc\\\":\\\"\\345\\275\\223\\347\\204\\266\\357\\274\\214\\344\\275\\240\\350\\277\\267\\344\\272\\272\\357\\274\\201\\\",\\\"cnt\\\":2},{\\\"idx\\\":2,\\\"desc\\\":\\\"heitui\\\",\\\"cnt\\\":1}],\\\"icon\\\":\\\"http://i0.hdslb.com/bfs/album/5ec559dbd4d54f8c1e76021d52eb9807de94bfb9.png\\\",\\\"my_vote\\\":0,\\\"pub_dynamic\\\":false,\\\"posX\\\":150,\\\"posY\\\":200,\\\"duration\\\":7000,\\\"shrink_icon\\\":\\\"http://i0.hdslb.com/bfs/b/2eec72efb74244eed5c2f28ce5628de4e9f9c9e8.png\\\",\\\"shrink_title\\\":\\\"\\346\\212\\225\\347\\245\\250\\\",\\\"show_status\\\":0}\"\n" +
+                "  id: 1068858804008963072\n" +
+                "  id_str: \"1068858804008963072\"\n" +
+                "  mid: 13984201\n" +
+                "  mtime: \"2022-06-06 18:31:21\"\n" +
+                "  oid: 739422420\n" +
+                "  progress: 22755\n" +
                 "}"
-        println(getPara(s, "content", ""))
+        println(MyLog().getVoteJsonArray(s))
+
     }
 
     private fun getPara(text: String, para: String, default: Any): String {
@@ -48,6 +53,7 @@ class ExampleUnitTest {
         }
         return default.toString()
     }
+
     private fun protobufToString(text: String): String {
         val split: List<String> = text.trim().split("\\")
         val s16 = StringBuilder()
@@ -65,9 +71,9 @@ class ExampleUnitTest {
                 val char = s.replace(number, "")
                 val charURLEncoder = URLEncoder.encode(char, StandardCharsets.UTF_8.name())
 
-                val append = if(s.startsWith(char)){
+                val append = if (s.startsWith(char)) {
                     charURLEncoder + numberURLEncoder
-                }else{
+                } else {
                     numberURLEncoder + charURLEncoder
                 }
 
