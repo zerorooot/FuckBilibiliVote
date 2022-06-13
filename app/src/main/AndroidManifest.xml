@@ -16,7 +16,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="remove vote(投票) attention(一键三连) link(预告) of Bilibili" />
+            android:value="An xposed module for deleting Bilibili's video pop-ups for vote(投票) 、attention(一键三连)、link(预告)、up(up主弹幕) and grade(打分)" />
         <meta-data
             android:name="xposedminversion"
             android:value="93" />

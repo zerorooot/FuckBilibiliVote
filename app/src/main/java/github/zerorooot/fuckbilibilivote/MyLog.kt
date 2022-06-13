@@ -17,6 +17,7 @@ class MyLog {
             }
         }
         list.forEach { s ->
+
             if (s.contains("ATTENTION")) {
                 print.put(
                     "attention",
@@ -134,7 +135,16 @@ class MyLog {
     }
 
     fun protobufToString(text: String): String {
-        val split: List<String> = text.trim().split("\\")
+        val split: List<String> = text
+            .replace(" ", "\\40\\").replace("!", "\\41\\").replace("#", "\\43\\")
+            .replace("$", "\\44\\").replace("%", "\\45\\").replace("&", "\\46\\")
+            .replace("'", "\\47\\").replace("(", "\\50\\").replace(")", "\\51\\")
+            .replace("*", "\\52\\").replace("+", "\\53\\").replace(",", "\\54\\")
+            .replace(".", "\\56\\").replace("/", "\\57\\").replace(":", "\\72\\")
+            .replace(";", "\\73\\").replace("=", "\\75\\").replace("?", "\\77\\")
+            .replace("@", "\\100\\").replace("[", "\\133\\").replace("/", "\\134\\")
+            .replace("]", "\\135\\")
+            .trim().split("\\")
         val s16 = StringBuilder()
         for (s in split) {
             if (s != "") {
@@ -147,7 +157,11 @@ class MyLog {
                     continue
                 }
 
-                val numberURLEncoder = "%${Integer.toHexString(Integer.valueOf(number, 8))}"
+                val numberURLEncoder = try {
+                    "%${Integer.toHexString(Integer.valueOf(number, 8))}"
+                }catch (e:Exception){
+                    "%20"
+                }
                 //数字
                 if (numberURLEncoder == "%$number") {
                     s16.append(number.replace("%", ""))
