@@ -25,19 +25,17 @@ class Xposed : IXposedHookLoadPackage {
         method.isAccessible = true
         XposedBridge.hookMethod(method, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
-                val string = param.result.toString()
-                if (string.contains("command_dms")) {
+                val result = param.result
+                if (result.toString().contains("command_dms")) {
                     param.result = null
                     try {
-                        val log = myLog.getLog(string)
+                        val log = myLog.getLog(result)
                         if (printInfo != log) {
                             XposedBridge.log(log)
                             printInfo = log
                         }
-
                     } catch (e: Exception) {
                         XposedBridge.log(e)
-                        XposedBridge.log(string)
                     }
                 }
 

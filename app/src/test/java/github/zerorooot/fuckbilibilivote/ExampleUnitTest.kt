@@ -15,15 +15,11 @@ import java.util.regex.Pattern
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        val a =
-            "{\\\"aid\\\":299515211,\\\"title\\\":\\\"\\343\\200\\220\\351\\235\\242MIAN\\343\\200\\221\\346\\201\\213\\347\\210\\261\\345\\221\\212\\346\\200\\245\\342\\235\\244| \\346\\214\\207\\347\\274\\235\\344\\270\\255\\351\\235\\222\\346\\266\\251\\350\\220\\214\\350\\212\\275~\\344\\270\\200\\347\\234\\274\\345\\210\\260\\350\\200\\201\\\",\\\"icon\\\":\\\"http://i0.hdslb.com/bfs/archive/03ef3f34944e0f78b1b4050fc3f9705d1fa905e3.png\\\",\\\"bvid\\\":\\\"BV1YF41157xd\\\",\\\"arc_pic\\\":\\\"http://i2.hdslb.com/bfs/archive/e5577bca67c9e1599d0a4f62777a7ffb83ed1919.jpg\\\",\\\"arc_duration\\\":90,\\\"shrink_icon\\\":\\\"http://i0.hdslb.com/bfs/b/44338bca6bb98a34da40698beb4ee7d19aea92a6.png\\\",\\\"shrink_title\\\":\\\"\\350\\247\\206\\351\\242\\221\\\",\\\"show_status\\\":0,\\\"duration\\\":5000,\\\"arc_type\\\":0}"
-                .replace("\\\"", "\"").replace("\\", "\\\\")
-        val stringa = JSONObject(a).getString("title")
+        val s =
+            "视频更新预告"
 
-//        com.google.protobuf.TextFormat.getParser()
-//            .merge("a, VideoInfo.getDefaultInstance()", JSONObject(a).toString())
-        println(MyLog().protobufToString("148"))
-
+//        println(MyLog().protobufToString(s))
+        println(protobufToString(s))
     }
 
     @Test
