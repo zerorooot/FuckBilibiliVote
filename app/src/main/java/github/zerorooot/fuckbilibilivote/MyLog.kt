@@ -5,8 +5,24 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class MyLog() {
+    fun getOptionCardLog(obj: Any): JSONArray {
+        val operationCardList = XposedHelpers.callMethod(obj, "getOperationCardNewList") as List<*>
+        val print = JSONArray()
+        operationCardList.forEach {
+            val standardJson = JSONObject()
+            val title =
+                XposedHelpers.callMethod(XposedHelpers.callMethod(it, "getStandard"), "getTitle")
+            val from = XposedHelpers.callMethod(it, "getFrom")
+            val to = XposedHelpers.callMethod(it, "getTo")
+            standardJson.put("title", title)
+            standardJson.put("time", "$from ~ $to")
+            print.put(standardJson)
+        }
 
-    fun getLog(obj:Any): String {
+        return print
+    }
+
+    fun getDmsLog(obj: Any): JSONObject {
         val commandDmsList =
             XposedHelpers.callMethod(obj, "getCommandDmsList") as List<*>
 
@@ -46,7 +62,7 @@ class MyLog() {
         }
 
 
-        return print.toString()
+        return print
     }
 
     private fun getUpJsonArray(print: JSONObject, content: String, progress: Int): JSONArray {

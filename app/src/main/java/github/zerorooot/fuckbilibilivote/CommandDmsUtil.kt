@@ -7,7 +7,7 @@ class CommandDmsUtil(private val s: Any) {
 
     fun getCommand(): String {
         return try {
-            template("getCommand").replace("#", "")
+            template("getCommand").toString().replace("#", "")
         } catch (e: Exception) {
             ""
         }
@@ -15,7 +15,7 @@ class CommandDmsUtil(private val s: Any) {
 
     fun getContent(): String {
         return try {
-            template("getContent")
+            template("getContent").toString()
         } catch (e: Exception) {
             ""
         }
@@ -23,7 +23,7 @@ class CommandDmsUtil(private val s: Any) {
 
     fun getExtra(): JSONObject {
         return try {
-            JSONObject(template("getExtra"))
+            JSONObject(template("getExtra").toString())
         } catch (e: Exception) {
             JSONObject()
         }
@@ -31,13 +31,14 @@ class CommandDmsUtil(private val s: Any) {
 
     fun getProgress(): Int {
         return try {
-            template("getProgress").toInt()
+            template("getProgress").toString().toInt()
         } catch (e: Exception) {
             0
         }
     }
 
-    private fun template(name: String): String {
-        return XposedHelpers.callMethod(s, name) as String
+
+    private fun template(name: String): Any {
+        return XposedHelpers.callMethod(s, name)
     }
 }

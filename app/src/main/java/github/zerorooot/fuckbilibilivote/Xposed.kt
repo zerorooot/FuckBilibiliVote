@@ -5,6 +5,8 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 class Xposed : IXposedHookLoadPackage {
@@ -17,31 +19,33 @@ class Xposed : IXposedHookLoadPackage {
             return
         }
 
-        val viewProgressReplyClass = XposedHelpers.findClass(
-            "com.bapis.bilibili.app.view.v1.ViewProgressReply",
-            lpparam.classLoader
-        )
-        val method = viewProgressReplyClass.getDeclaredMethod("getVideoGuide")
-        method.isAccessible = true
-        XposedBridge.hookMethod(method, object : XC_MethodHook() {
-            override fun afterHookedMethod(param: MethodHookParam) {
-                val result = param.result
-                if (result.toString().contains("command_dms")) {
-                    param.result = null
-                    try {
-                        val log = myLog.getLog(result)
-                        if (printInfo != log) {
-                            XposedBridge.log(log)
-                            printInfo = log
-                        }
-                    } catch (e: Exception) {
-                        XposedBridge.log(e)
+
+        XposedHelpers.findAndHookMethod("com.bapis.bilibili.app.view.v1.ViewProgressReply",
+            lpparam.classLoader, "getVideoGuide", object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    val result = param.result
+
+                    val print = JSONObject()
+
+                    if (result.toString().contains("operation_card_new")) {
+                        print.put("operation_card_new", myLog.getOptionCardLog(result))
+
+                        XposedHelpers.callMethod(result, "clearOperationCard")
+                        XposedHelpers.callMethod(result, "clearOperationCardNew")
                     }
+
+                    if (result.toString().contains("command_dms")) {
+                        param.result = null
+                        print.put("command_dms", myLog.getDmsLog(result))
+                    }
+
+                    if (printInfo != print.toString()) {
+                        XposedBridge.log(print.toString())
+                        printInfo = print.toString()
+                    }
+
                 }
-
-            }
-        })
-
+            })
     }
 }
 

@@ -1,5 +1,6 @@
 package github.zerorooot.fuckbilibilivote
 //
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Test
 import java.net.URLDecoder
@@ -15,11 +16,17 @@ import java.util.regex.Pattern
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        val s =
-            "视频更新预告"
+        val a = JSONObject()
+        a.put("title", "凡人修仙传")
+        a.put("time", "15 ~ 30")
+        val jsonArray = JSONArray()
+        jsonArray.put(a)
+
+        val jsonObject = JSONObject()
+        jsonObject.put("operation_card_new", jsonArray)
 
 //        println(MyLog().protobufToString(s))
-        println(protobufToString(s))
+        println(jsonObject)
     }
 
     @Test
