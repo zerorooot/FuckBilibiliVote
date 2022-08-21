@@ -31,12 +31,8 @@ class ExampleUnitTest {
 
     @Test
     fun tt() {
-        val number = "21"
-        println(Integer.valueOf(number, 8))
-
-        val valueOf = Integer.valueOf(number, 8)
-        val toHexString = Integer.toHexString(valueOf)
-        println(toHexString)
+        val print = JSONObject()
+        println(print.length())
     }
 
     @Test

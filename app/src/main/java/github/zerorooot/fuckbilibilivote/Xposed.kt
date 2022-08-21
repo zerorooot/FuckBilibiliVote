@@ -1,11 +1,11 @@
 package github.zerorooot.fuckbilibilivote
 
+import android.R.attr.classLoader
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
-import org.json.JSONArray
 import org.json.JSONObject
 
 
@@ -35,17 +35,33 @@ class Xposed : IXposedHookLoadPackage {
                     }
 
                     if (result.toString().contains("command_dms")) {
-                        param.result = null
+                        XposedHelpers.callMethod(param.thisObject, "clearVideoGuide")
                         print.put("command_dms", myLog.getDmsLog(result))
                     }
 
-                    if (printInfo != print.toString()) {
+                    if (print.length() != 0 && printInfo != print.toString()) {
                         XposedBridge.log(print.toString())
                         printInfo = print.toString()
                     }
 
                 }
             })
+
+//番剧出现的广告，https://b23.tv/ep508404，21:52秒左右
+        //com.bilibili.bangumi.remote.http.server.RemoteLogicService getOperationCardList
+        //6.85.0
+        XposedHelpers.findAndHookMethod("com.bilibili.bangumi.remote.http.impl.f",
+            lpparam.classLoader,
+            "q",
+            Long::class.javaPrimitiveType,
+            Int::class.javaPrimitiveType,
+            object : XC_MethodHook() {
+                @Throws(Throwable::class)
+                override fun afterHookedMethod(param: MethodHookParam) {
+                        param.result = null
+                }
+            })
+
     }
 }
 
