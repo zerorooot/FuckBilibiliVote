@@ -1,21 +1,25 @@
 # FuckBilibiliVote
-An xposed module for deleting Bilibili's video pop-ups for vote(投票) 、attention(一键三连)、link(预告)、up(up主弹幕) and grade(打分)
+移除哔哩哔哩app中弹幕弹窗
 
-Test video link https://www.bilibili.com/video/BV1Wy4y1m7Xu
+相关测试视频：
 
-log：
-
-```json
-{"vote":[{"time":"07:42 ~ 07:49","question":"谁来背这个锅？","option1":"使用AI的人","option2":"开发AI的人"}],"attention":{"time":"00:34 ~ 00:39"},"up":[{"content":"危","time":"00:53"},{"content":"嗨呀，去年做好的视频啦，没想到，已经411年了","time":"05:16"}]}
+https://www.bilibili.com/video/BV1Wy4y1m7Xu
+```txt
+vote : 07:42 ~ 07:49
+attention : 00:34 ~ 00:39
+up : 00:53、05:16
 ```
 
-Test video link https://www.bilibili.com/video/BV1N5411Q7UU
-
-log：
-
-```json
-{"operation_card_new":[{"time":"15 ~ 30","title":"凡人修仙传"}]}
+https://www.bilibili.com/video/BV1N5411Q7UU
+```txt
+00:15 ~ 00:30
+```
+https://www.bilibili.com/video/BV1Lt4y137LY
+```txt
+00:17 ~ 00:23
 ```
 
-If you think this app is very helpful to you, please give me a free start, thanks
+注：如果你想显示up主弹幕，在`/sdcard/Android/`下新建一个名为`up`文件即可。
+
+如果一切正常，你会在lsp日志里看到`fuckbilibilivote : 显示up主弹幕`
 
