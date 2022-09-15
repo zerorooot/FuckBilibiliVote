@@ -1,7 +1,6 @@
 package github.zerorooot.fuckbilibilivote
 
 
-import android.R.attr.classLoader
 import android.os.Environment
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
@@ -9,11 +8,9 @@ import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
-import java.lang.reflect.Method
 
 
 class Xposed : IXposedHookLoadPackage {
-
     @Throws(Throwable::class)
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
         if (!lpparam.packageName.contains("bili")) {
@@ -50,15 +47,17 @@ class Xposed : IXposedHookLoadPackage {
                     }
 
                     val commandDmsList =
-                        XposedHelpers.callMethod(result, "getCommandDmsList") as List<*>
+                        (XposedHelpers.callMethod(result, "getCommandDmsList") as List<*>).toMutableList()
+                    XposedHelpers.callMethod(result, "clearCommandDms")
                     if (commandDmsList.isNotEmpty()) {
-                        commandDmsList.forEachIndexed { index, any ->
-                            if (!XposedHelpers.callMethod(any, "getCommand").toString()
-                                    .contains("UP")
-                            ) {
-                                XposedHelpers.callMethod(result, "removeCommandDms", index)
-                            }
+                        commandDmsList.removeIf { i ->
+                            !XposedHelpers.callMethod(i, "getCommand").toString()
+                                .contains("UP")
                         }
+                        commandDmsList.forEach { i->
+                            XposedHelpers.callMethod(result, "addCommandDms", i)
+                        }
+
                     }
 
 
