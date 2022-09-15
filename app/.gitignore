@@ -2,3 +2,5 @@
 /release
 /app/src/androidTest/
 /app/src/test
+src/test
+src/androidTest
