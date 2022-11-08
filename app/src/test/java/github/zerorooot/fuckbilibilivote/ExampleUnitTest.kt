@@ -37,7 +37,7 @@ class ExampleUnitTest {
 
     @Test
     fun ta() {
-        val str = "\\345\\244\\247\\345\\256\\266\\345\\245\\275\\2728.7"
+        val str = "\\347\\273\\231\\350\\257\\204\\345\\210\\206\\"
         val pattern: Pattern = Pattern.compile("\\\\")
         val strs: Array<String> = pattern.split(str)
         val sb = StringBuffer()

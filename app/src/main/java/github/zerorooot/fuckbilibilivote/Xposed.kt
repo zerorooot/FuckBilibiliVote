@@ -17,45 +17,36 @@ class Xposed : IXposedHookLoadPackage {
             return
         }
 
-
         XposedHelpers.findAndHookMethod(
             "com.bapis.bilibili.app.view.v1.ViewProgressReply",
             lpparam.classLoader, "getVideoGuide", object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
+                    var commandDmsList: MutableList<*>? = null
+
                     val config =
                         Environment.getExternalStorageDirectory().toString() + "/Android/up"
-                    if (!File(config).exists()) {
-                        XposedBridge.log("fuckbilibilivote : 清除所有弹窗")
-                        XposedHelpers.callMethod(param.thisObject, "clearVideoGuide")
-                        return
+                    val log = if (!File(config).exists()) {
+                        "fuckbilibilivote : 清除所有弹窗"
+                    } else {
+                        commandDmsList =
+                            (XposedHelpers.callMethod(
+                                param.result,
+                                "getCommandDmsList"
+                            ) as List<*>).toMutableList()
+
+                        "fuckbilibilivote : 显示up主弹幕"
                     }
 
-                    XposedBridge.log("fuckbilibilivote : 显示up主弹幕")
-                    val result = param.result
-                    val methodMap =
-                        mapOf(
-                            "getAttentionList" to "clearAttention",
-                            "getCardsSecondList" to "clearCardsSecond",
-                            "getOperationCardList" to "clearOperationCard",
-                            "getOperationCardNewList" to "clearOperationCardNew"
-                        )
+                    XposedHelpers.callMethod(param.thisObject, "clearVideoGuide")
+                    XposedBridge.log(log)
 
-                    methodMap.forEach { (t, u) ->
-                        if ((XposedHelpers.callMethod(result, t) as List<*>).isNotEmpty()) {
-                            XposedHelpers.callMethod(result, u)
-                        }
-                    }
-
-                    val commandDmsList =
-                        (XposedHelpers.callMethod(result, "getCommandDmsList") as List<*>).toMutableList()
-                    XposedHelpers.callMethod(result, "clearCommandDms")
-                    if (commandDmsList.isNotEmpty()) {
+                    if (commandDmsList != null && commandDmsList.isNotEmpty()) {
                         commandDmsList.removeIf { i ->
                             !XposedHelpers.callMethod(i, "getCommand").toString()
                                 .contains("UP")
                         }
-                        commandDmsList.forEach { i->
-                            XposedHelpers.callMethod(result, "addCommandDms", i)
+                        commandDmsList.forEach { i ->
+                            XposedHelpers.callMethod(param.thisObject, "addCommandDms", i)
                         }
 
                     }
@@ -64,6 +55,8 @@ class Xposed : IXposedHookLoadPackage {
                 }
             }
         )
+        //1.7万+人同时在看~
+        //DanmakuEventBus subscribeUniversalWidgtsMsgs OnOnlineInfoChanged {"args":{"icon_url":"","show_special":false,"special_content":"1.6万+人同时在看~","video_id":"884337754","viewer_content":"1.6万+人正在看","work_id":"859990221"}}
 
         //番剧出现的广告，https://b23.tv/ep508404，21:52秒左右
         //com.bilibili.bangumi.remote.http.server.RemoteLogicService getOperationCardList
