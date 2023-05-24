@@ -29,10 +29,16 @@ class ExampleUnitTest {
         println(jsonObject)
     }
 
+    fun getTime(progress: Int): String {
+        val time = progress / 1000
+        val m = (time % 3600 / 60).toString().padStart(2, '0')
+        val ss = (time % 3600 % 60).toString().padStart(2, '0')
+        return "$m:$ss"
+    }
     @Test
     fun tt() {
-        val print = JSONObject()
-        println(print.length())
+        println(getTime(12600))
+
     }
 
     @Test
