@@ -37,7 +37,8 @@ class ExampleUnitTest {
     }
     @Test
     fun tt() {
-        println(getTime(12600))
+        println(getTime(9500))
+        println(getTime(68300))
 
     }
 
